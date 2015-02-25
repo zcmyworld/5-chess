@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>playing ..</title>
+	</head>
+	<link rel="stylesheet" type="text/css" href="css/5chess.css">
+	<body>
+		<!-- <input type='hidden' value='-1' id='chess_name'><br>
+		<input type='hidden' value='' id="chess_color"><br>
+		<input type='hidden' value='white' id="last_play_color"><br>
+		<input type='hidden' value='0' id="user_status"><br> -->
+
+		<input type='text' value='-1' id='chess_name'><br><!--棋局名称-->
+		<input type='text' value='white' id="chess_color"><br><!--用户当前所用棋子-->
+		<input type='text' value='white' id="last_play_color"><br><!--最后下的棋子颜色-->
+		<input type='text' value='0' id="user_status"><br><!--用户状态-->
+		<div id="hintBox">
+			<div id='hint_title'>服务器连接中..</div>
+		</div>
+		<div id="selectBox">
+			<div id="select_title"></div>
+			<input type='hidden' id="selectBox_flag" value="0">
+			<div id="select_ensure">确定</div>
+			<div id="select_close">取消</div>
+		</div>
+		<div id="mesg_box">
+			<div id="mesg_title">等待对方响应...</div>
+			<input type="hidden" id="mesg_flag" >
+			<div id="mesg_close">关闭</div>
+		</div>
+
+		<canvas id='myCanvas' width="480" height="480" style='background:rgb(219,180,151);'></canvas>
+		<div id="statusBox">
+			<div id='currentUserBox'><span>当前用户：</span><span id="currentUser"></span></div>
+			<div id="chess_color">
+				<div id="blackBox">
+					<div id="black"></div><span id="blackUser">&nbsp;</span><span class='current_class'>先</span>
+				</div>
+				<!-- <br> -->
+				<div id="whiteBox">
+					<div id="white"></div><span id="whiteUser">&nbsp;</span><span class='current_class'>先</span>
+				</div>
+				<div id="send_lost">认输</div>
+			</div>
+		</div>
+		<div id="userList">
+			<div id="userList_header">对局室</div>
+			<div id="userList_content">
+			</div>
+		</div>
+		<script type="text/javascript" src="javascript/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="javascript/base.js"></script>
+		<script type="text/javascript" src="javascript/5chess.js"></script>
+	</body>
+</html>

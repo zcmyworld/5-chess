@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>index</title>
+  </head>
+  <body>
+<input type="radio" name="cur_player" id="black_player" onclick=set_current_player() />Black  
+ <input type="radio" name="cur_player" id="white_player" onclick=set_current_player() />White 
+ <canvas id="c" width="600" height="600"></canvas> 
+   <script> 
+   var canvas = document.getElementById("c") 
+   var context = canvas.getContext("2d") 
+  
+   var radio_black = document.getElementById("black_player") 
+   var radio_white = document.getElementById("white_player") 
+  
+   radio_black.checked = true 
+  
+   // player status: 0 black; 1 white 
+   player_status = 0 
+   // draw map 
+   var margin = 30 
+  
+  function Cell(x, y) 
+   { 
+     this.x = x 
+     this.y = y 
+     this.draw = function(){ 
+       var cat = new Image() 
+       if (player_status == 0) 
+        cat.src = "black.jpg" 
+       else 
+         cat.src = "white.jpg" 
+                var x_line = parseInt(String(this.x / margin)) 
+       var y_line = parseInt(String(this.y / margin)) 
+       x_pos = x_line * margin 
+       y_pos = y_line * margin 
+       context.drawImage(cat, x_pos, y_pos) 
+     } 
+   } 
+ </script> 
+ <script> 
+   var x_lines = canvas.width / margin 
+   var y_lines = canvas.height / margin 
+   // store the status of the chesses 
+   var gobang_table = new Array(y_lines) 
+   for (var index = 0; index < y_lines; index++) 
+     gobang_table[index] = new Array(x_lines) 
+     for (var index = 0; index < y_lines; index++) 
+    for(var x_index = 0; x_index < x_lines; x_index++) 
+       gobang_table[index][x_index] = 0 
+    
+   // draw the map 
+   for (var index = 0; index <= x_lines; index++) 
+   { 
+     context.moveTo(index*margin, 0) 
+     context.lineTo(index*margin, canvas.height) 
+   }   
+   for (var index = 0; index <= y_lines; index++) 
+   { 
+     context.moveTo(0, index*margin) 
+     context.lineTo(canvas.width, index*margin) 
+   } 
+  
+   context.stroke() 
+ 
+   //set click event handle 
+   canvas.addEventListener("click", click_event_handle, false) 
+  
+   function click_event_handle(e) 
+   { 
+    var cell = get_cur_position(e) 
+  
+     // whether can fall the chess 
+     var x_line = parseInt(String(cell.x / margin)) 
+     var y_line = parseInt(String(cell.y / margin)) 
+ 
+     if (gobang_table[y_line][x_line] != 0) 
+     { 
+       alert(y_line) 
+       alert(x_line) 
+       alert("exist") 
+       return 
+     } 
+     else 
+     { 
+       if (player_status == 0) 
+       { 
+         gobang_table[y_line][x_line] = 1 
+         cell.draw() 
+      }        else 
+       { 
+                gobang_table[y_line][x_line] = 2 
+         cell.draw() 
+       } 
+  
+         // is game over 
+       fresh_game_status() 
+  
+       // change user to play 
+       player_status = 1 - player_status 
+     } 
+   } 
+       function get_cur_position(e) 
+   { 
+     var x 
+     var y 
+     if (e.pageX != undefined && e.pageY != undefined) 
+     { 
+            x = e.pageX 
+      y = e.pageY 
+     } 
+     else 
+     { 
+       x = e.clientX + document.body.scrollLeft + 
+           document.documentElement.scrollLeft 
+       y = e.clientY + document.body.scrollTop + 
+           document.documentElement.scrollTop 
+     } 
+  
+  
+     x -= canvas.offsetLeft 
+     y -= canvas.offsetTop 
+  
+     var cell = new Cell(x, y) 
+     return cell 
+   } 
+  
+   function fresh_game_status() 
+   { 
+     if (player_status == 0) 
+       target_occu = 1 
+     else 
+       target_occu = 2 
+     // horizone 
+     for(var i = 0; i < y_lines; i++) 
+     { 
+       var count = 0 
+       for (var j = 0; j < x_lines; j++) 
+       { 
+         if (gobang_table[i][j] == target_occu) 
+         { 
+           count++ 
+           if (count >= 5) 
+           { 
+             notification = (target_occu == 1)?"black win":"white win" 
+             alert(notification) 
+            return 
+           } 
+         } 
+       } 
+     } 
+  
+     // vertical 
+     for(var i = 0; i < x_lines; i++) 
+     { 
+       var count = 0 
+       for (var j = 0; j < y_lines; j++) 
+       { 
+         if (gobang_table[j][i] == target_occu) 
+         { 
+           count++ 
+           if (count >= 5) 
+           { 
+             notification = (target_occu == 1)?"black win":"white win" 
+             alert(notification) 
+             return 
+           } 
+         } 
+       } 
+     } 
+  
+     // left oblique 
+     for(var i = 0; i < y_lines; i++) 
+     { 
+       var count = 0 
+       for(var j = 0, k = i; j < x_lines; j++) 
+       { 
+         if (gobang_table[k][j] == target_occu) 
+         { 
+           count++ 
+           k++ 
+           if (count >= 5) 
+           { 
+             notification = (target_occu == 1)?"black win":"white win" 
+             alert(notification) 
+             return 
+           } 
+         } 
+       } 
+     }   
+  
+     // right oblique 
+     for(var j = 0; j < x_lines; j++) 
+     { 
+       var count = 0 
+       for(var i = 0, k  = j; i < y_lines; i++) 
+       { 
+         if (gobang_table[i][k] == target_occu) 
+         { 
+           count++ 
+           k-- 
+           if (count >= 5) 
+           { 
+             notification = (target_occu == 1)?"black win":"white win" 
+             alert(notification) 
+             return 
+           } 
+         } 
+       } 
+     }   
+  
+   }// end of function 
+  
+   function set_current_player() 
+   { 
+     if (radio_black.checked == true) 
+       player_status = 0 
+     else 
+       player_status = 1   
+   } 
+  
+ </script> 
+  </body>
+</html>

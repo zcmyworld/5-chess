@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>index</title>
+	</head>
+	<body>
+		hello websocket
+		 <!-- <iframe src="/iframe" style='display:none;'></iframe>  -->
+		<script type="text/javascript">
+			if('WebSocket' in window){
+				function reconnect(){
+					var t1 = new Date();	
+					var socket = new WebSocket('ws://127.0.0.1:4180');
+					socket.onopen = function(event) {
+						var data = "";
+						for(var i = 0;i<7553600;i++){
+							data += 1;
+						}
+						// console.log(data.length)
+						var data = 'helloworld'
+						socket.send(data);
+														
+						socket.onmessage = function(event) {
+							console.log(event)
+						};
+						socket.onclose = function(event) {
+							console.log('连接断开')
+							reconnect()
+							// console.log('Client notified socket has closed',event);
+							// reconnect()
+						};
+					};
+				}
+				reconnect()
+			}else{
+				alert('本浏览器不支持WebSocket哦~');
+			}
+		</script>
+	</body>
+</html>

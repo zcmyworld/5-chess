@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>login</title>
+  </head>
+  <style type="text/css">
+  #login_box{
+    width: 400px;
+    height: 280px;
+    border-radius: 5px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin-left: -200px;
+    margin-top: -140px;
+    box-shadow: 0px 0px 30px 10px;
+  }
+  #userName{
+    text-align: center;
+    font-size: 30px;
+    border: none;
+    border-bottom: 1px solid rgb(180,180,180);
+    width:80%;
+    margin-left: 10%;
+    margin-top: 70px;
+  }
+  #ensure{
+    border-radius: 5px;
+    cursor: pointer;
+    width: 80%;
+    height: 40px;
+    background-color: rgb(119,169,206);
+    margin-left: 10%;
+    margin-top: 80px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 20px;
+  }
+  #ensure:hover{
+    background-color: rgb(4,116,191);
+  }
+  </style>
+  <body>
+    <div id="login_box">
+      <input id="userName" placeholder='请输入昵称'>
+      <div id="ensure">确定</div>
+    </div>
+    <script type="text/javascript" src="javascript/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="javascript/base.js"></script>
+    <script type="text/javascript" src="javascript/login.js"></script>
+  </body>
+</html>
