@@ -32,7 +32,8 @@ body{
 	margin-top: -75px;
 	box-shadow: 0px 0px 30px 3px rgb(180,180,180);
 	z-index: 99;
-	background-color: rgb(255,118,118);
+	/*background-color: rgb(255,118,118);*/
+	background-color: white;
 }
 #mesg_close:hover{
 	background-color: rgb(111,180,86);
@@ -45,7 +46,7 @@ body{
 #mesg_close{
 	width: 80%;
 	text-align:center;
-	background-color: rgb(138,194,109);
+	background-color: rgb(43,145,227);
 	margin-left: 10%;
 	height: 30px;
 	line-height: 30px;

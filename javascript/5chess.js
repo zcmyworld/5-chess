@@ -35,17 +35,19 @@ $(document).ready(function() {
 			$("#mesg_box").show()
 		}
 		if (data.user_info.chess_status == 3) {
-			$("#select_title").html("<span style='color:blue'>" + data.user_info.s_inv_player + '</span>  邀请你进行对局');
+			$("#select_title").html("<span style='color:blue'>" + data.user_info.other_player + '</span>  邀请你进行对局');
 			$("#selectBox").show()
 		}
 	}
 
 	message_group.cancel_chess = function(data) {
-			$("#hintBox").hide()
-			$("#selectBox").hide()
-			$("#mesg_box").hide()
-		}
-		//断开重连的时候发送这些消息
+		$("#user_status").val(0)
+		$("#hintBox").hide()
+		$("#selectBox").hide()
+		$("#mesg_box").hide()
+	}
+
+	//断开重连的时候发送这些消息
 	message_group.chess_info = function(data) {
 		//这里保存对手信息
 		//棋局顺序
@@ -104,11 +106,14 @@ $(document).ready(function() {
 			$("#hintBox").hide()
 		}, 1000);
 		var userName = $("#currentUser").html();
+		$("#user_status").val(2)
 		if (userName == data.sName) {
 			$("#chess_color").val('black')
 		} else {
 			$("#chess_color").val('white')
 		}
+		$("#whiteBox").find('.current_class').hide()
+		$("#blackBox").find('.current_class').show()
 		$("#chess_name").val(data.chess_name)
 		$("#blackUser").html(data.sName)
 		$("#last_play_color").val('white')
@@ -127,7 +132,7 @@ $(document).ready(function() {
 		if (chess_color == 'white') {
 			$("#whiteBox").find('.current_class').hide()
 			$("#blackBox").find('.current_class').show()
-		}else{
+		} else {
 			$("#whiteBox").find('.current_class').show()
 			$("#blackBox").find('.current_class').hide()
 		}
@@ -140,6 +145,7 @@ $(document).ready(function() {
 		$("#chess_name").val(-1)
 		$("#last_play_color").val('white')
 		$("#chess_color").val('white')
+		$("#user_status").val(0)
 		$("#select_title").html("<span style='color:blue'>" + winUser + '</span>  获得胜利！');
 		$("#selectBox").show()
 		$("#blackUser").html('&nbsp;');
@@ -156,11 +162,12 @@ $(document).ready(function() {
 		$("#chess_color").val('white')
 		var currentUser = $("#currentUser").html();
 		if (currentUser == lostUser) {
-			$("#select_title").html("<span style='color:blue'>" + '你' + '</span>  投降了');
+			$("#mesg_title").html("<span style='color:blue'>" + '你' + '</span>  投降了');
 		} else {
-			$("#select_title").html("<span style='color:blue'>" + lostUser + '</span>  投降了');
+			$("#mesg_title").html("<span style='color:blue'>" + lostUser + '</span>  投降了');
 		}
-		$("#selectBox").show()
+		$("#mesg_flag").val(2)
+		$("#mesg_box").show()
 		$("#blackUser").html('&nbsp;');
 		$("#whiteUser").html('&nbsp;');
 		$("#whiteBox").find('.current_class').hide()
@@ -171,6 +178,7 @@ $(document).ready(function() {
 	if ('WebSocket' in window) {
 		function connect() {
 			console.log('执行connect')
+			console.log(socket)
 			socket.onopen = function(event) {
 				$("#hint_title").html('连接服务器成功！')
 				$("#hintBox").hide();
@@ -194,6 +202,7 @@ $(document).ready(function() {
 					flag: 'login',
 					userName: userName
 				}))
+
 			}
 		}
 		connect()
@@ -211,6 +220,9 @@ $(document).ready(function() {
 		console.log(data)
 		sendData(JSON.stringify(data))
 	})
+
+
+
 	$(document).on('click', '.ue_userName', function() {
 		var user_status = $("#user_status").val()
 		if (user_status != 0) {
@@ -227,20 +239,35 @@ $(document).ready(function() {
 			sName: sName,
 			rName: rName
 		}
+		$("#user_status").val(1)
 		sendData(JSON.stringify(data))
-			// $("#hint_title").html("等待对方响应...");
-			// $("#hintBox").show()
 		$("#mesg_title").html('等待对方响应..');
 		$("#mesg_box").show()
 	})
 	$(document).on('click', '#mesg_close', function() {
-		var currentUser = $("#currentUser").html()
+		if ($("#mesg_flag").val() == 1) {
+			var currentUser = $("#currentUser").html()
+			$("#user_status").val(0)
+			var data = {
+				flag: 'cancel_inv',
+				userName: currentUser
+			}
+			sendData(JSON.stringify(data))
+		}
+		if ($("#mesg_flag").val() == 2) {
+			$("#mesg_box").hide();
+		}
+	})
+	window.onbeforeunload = function(e) {
+		var userName = $("#currentUser").html();
+		alert(userName)
 		var data = {
-			flag: 'cancel_inv',
-			userName: currentUser
+			flag: 'close',
+			chess_userName:userName
 		}
 		sendData(JSON.stringify(data))
-	})
+	};
+
 	$(document).on('click', '#select_ensure', function() {
 		if ($("#selectBox_flag").val() == 1) {
 			$("#selectBox").hide();
@@ -269,7 +296,7 @@ $(document).ready(function() {
 		$("#user_status").val(0)
 		var currentUser = $("#currentUser").html()
 		var data = {
-			flag: 'cancel_chess',
+			flag: 'cancel_inv',
 			userName: currentUser
 		}
 		sendData(JSON.stringify(data))
@@ -290,6 +317,13 @@ $(document).ready(function() {
 			cookieJson[cookieArr[i][0]] = cookieArr[i][1]
 		}
 		return cookieJson;
+	}
+
+	function userToInitStatus() {
+		$("#chess_name").val(-1)
+		$("#chess_color").val('white')
+		$("#last_play_color").val('white')
+		$("#user_status").val(0)
 	}
 
 	function click_event_handle(e) {

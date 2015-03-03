@@ -70,6 +70,7 @@ Sender.prototype.send = function(data) {
 	}
 }
 Sender.prototype.ping = function() {
+	// console.log('ping')
 	var opcode = 0x9;
 	var data = "ping";
 	var socket = this.socket;
@@ -100,7 +101,21 @@ Sender.prototype.pong = function() {
 	socket.write(outputBuffer, 'binary');
 }
 
-
+Sender.prototype.close = function(){
+	var opcode = 0x8;
+	var data = "close";
+	var socket = this.socket;
+	data = new Buffer(data);
+	var dataLength = data.length;
+	var dataOffset = 2; 
+	var payloadLen = dataLength; 
+	var totalLength = dataLength + dataOffset;
+	var outputBuffer = new Buffer(totalLength);
+	outputBuffer[0] = 0x80 | opcode; 
+	outputBuffer[1] = payloadLen; 
+	data.copy(outputBuffer, dataOffset); 
+	socket.write(outputBuffer, 'binary');
+}
 function getRandomMask() {
 	return new Buffer([~~(Math.random() * 255), ~~(Math.random() * 255), ~~(Math.random() * 255), ~~(Math.random() * 255)]);
 }

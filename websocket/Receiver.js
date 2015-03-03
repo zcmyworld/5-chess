@@ -7,6 +7,7 @@ function Recevier() {
 	self.maskArr = []
 	self.ontext = function() {}
 	self.pong = function(){}
+	self.onclose = function(){}
 	// self.on_pong = 
 }
 
@@ -50,19 +51,20 @@ Recevier.prototype.clientParse = function(data) {
 	}
 }
 Recevier.prototype.parse = function(data) {
+	
+	var self = this;
+	
 	if (data[0].toString(2).slice(4) == 1000) {
-		//断开连接
+		console.log('连接关闭')
+		self.onclose()
 		return
 	}
 	
 	if (data[0].toString(2).slice(4) == 1010) {
-		//pong
 		console.log('pong')
-		// self.on_pong()
 		return
 	}
 
-	var self = this;
 	var payloadLen = data[1] & 0x7f;
 	if (self.isBig) {
 		var flagLength = 0;

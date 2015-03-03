@@ -8,15 +8,17 @@ var fs = require('fs')
 var path = require('path')
 
 function WebSocketServer(options) {
+	// options.timeout = 10000
+
 	EventEmitter.call(this)
 	var self = this;
 	options.port = options.port || 3000;
 	this.server = http.createServer(function(req, res) {
-		res.send = function(json){
+		res.send = function(json) {
 			var header = {
-				"Content-Type":"application/json"
+				'Content-Type': 'application/json;charset=utf-8'
 			}
-			res.writeHead(200,header);
+			res.writeHead(200, header);
 			res.end(JSON.stringify(json));
 		}
 		var url_path = req.url;
@@ -41,17 +43,17 @@ function WebSocketServer(options) {
 	var opts = {}
 	opts.timeout = this.server.timeout || 12000
 	this.server.on('upgrade', function(req, socket, body) {
-		req.connection.on('close', function() {
+		socket.on('close', function(data) {
+			console.log('socket on close')
 			self.emit('close')
 		})
-
 		establishConnection(req, socket, body)
 		var handler = new Handler(req, socket, body, opts);
 		self.emit('connection', handler)
 	});
+
 };
 util.inherits(WebSocketServer, EventEmitter);
-
 
 var url_groups = {};
 
@@ -86,7 +88,7 @@ WebSocketServer.prototype.sendfile = function(filename, res) {
 	var header = {
 		'Content-Type': mimes[ext]
 	}
-	if(ext == 'unknown'){
+	if (ext == 'unknown') {
 		return true;
 	}
 	if (!fs.existsSync(url_path)) {
@@ -98,7 +100,7 @@ WebSocketServer.prototype.sendfile = function(filename, res) {
 			console.log(err)
 			return
 		}
-		res.writeHead(200,header);
+		res.writeHead(200, header);
 		res.write(file.toString())
 		res.end();
 	})
@@ -120,13 +122,16 @@ function Handler(req, socket, body, opts) {
 	var self = this;
 	self.sender = new Sender(socket);
 	self.receiver = new Receiver(true);
-	if (opts.timeout > 3000) { //debug
-		setInterval(function() {
-			self.sender.ping()
-		}, 5000)
-	}
+	self._socket = socket;
+	setInterval(function() {
+		self.sender.ping()
+	}, 5000)
 	self.receiver.ontext = function(data) {
 		self.emit('message', data)
+	}
+	self.receiver.onclose = function(data) {
+		self.sender.close()
+		self.emit('close')
 	}
 	socket.on('data', function(data) {
 		self.receiver.parse(data)
@@ -136,6 +141,10 @@ function Handler(req, socket, body, opts) {
 util.inherits(Handler, EventEmitter);
 Handler.prototype.send = function(data) {
 	this.sender.send(data)
+}
+
+Handler.prototype.close = function(data) {
+	this.sender.close(data)
 }
 
 
